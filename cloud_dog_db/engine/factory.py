@@ -21,7 +21,14 @@ def _base_connect_args(settings: DatabaseSettings) -> dict[str, Any]:
     if _is_sqlite(settings):
         connect_args["check_same_thread"] = False
     else:
-        connect_args["connect_timeout"] = settings.connect_timeout_seconds
+        # Connect-timeout kwarg is DBAPI-specific: psycopg/psycopg2/pymysql accept
+        # ``connect_timeout``, but pg8000 (pure-Python Postgres driver) only accepts
+        # ``timeout`` and raises TypeError on ``connect_timeout``. Pick per driver.
+        driver = make_url(settings.to_sync_url()).get_driver_name()
+        if driver == "pg8000":
+            connect_args["timeout"] = settings.connect_timeout_seconds
+        else:
+            connect_args["connect_timeout"] = settings.connect_timeout_seconds
     return connect_args
 
 

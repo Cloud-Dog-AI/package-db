@@ -148,7 +148,9 @@ class DatabaseSettings(BaseModel):
 
     def to_sync_url(self) -> str:
         if self.url:
-            return str(make_url(self.url))
+            # render_as_string(hide_password=False): str(URL) masks the password as
+            # *** (SQLAlchemy default), which breaks auth when a full URL is supplied.
+            return make_url(self.url).render_as_string(hide_password=False)
 
         if self.dialect == DatabaseDialect.SQLITE:
             sqlite_path = self.path or self.database or ":memory:"
@@ -172,19 +174,20 @@ class DatabaseSettings(BaseModel):
         if self.url:
             url = make_url(self.url)
             driver = url.drivername
-            if driver.startswith("sqlite+"):
-                return str(url.set(drivername="sqlite+aiosqlite"))
-            if driver.startswith("mysql+"):
-                return str(url.set(drivername="mysql+aiomysql"))
-            if driver.startswith("postgresql+"):
-                return str(url.set(drivername="postgresql+asyncpg"))
-            if driver == "sqlite":
-                return str(url.set(drivername="sqlite+aiosqlite"))
-            if driver == "mysql":
-                return str(url.set(drivername="mysql+aiomysql"))
-            if driver == "postgresql":
-                return str(url.set(drivername="postgresql+asyncpg"))
-            return str(url)
+            # render_as_string(hide_password=False): str(URL) masks the password.
+            async_driver = {
+                "sqlite": "sqlite+aiosqlite", "mysql": "mysql+aiomysql", "postgresql": "postgresql+asyncpg",
+            }.get(driver)
+            if async_driver is None:
+                if driver.startswith("sqlite+"):
+                    async_driver = "sqlite+aiosqlite"
+                elif driver.startswith("mysql+"):
+                    async_driver = "mysql+aiomysql"
+                elif driver.startswith("postgresql+"):
+                    async_driver = "postgresql+asyncpg"
+            if async_driver is not None:
+                url = url.set(drivername=async_driver)
+            return url.render_as_string(hide_password=False)
 
         if self.dialect == DatabaseDialect.SQLITE:
             sqlite_path = self.path or self.database or ":memory:"

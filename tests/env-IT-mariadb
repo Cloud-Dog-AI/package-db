@@ -1,0 +1,7 @@
+TEST_ENV_TIER=IT
+CLOUD_DOG_DB__DIALECT=mysql
+CLOUD_DOG_DB__HOST=${vault.dev.databases.providers.mysql.host}
+CLOUD_DOG_DB__PORT=3306
+CLOUD_DOG_DB__USERNAME=${vault.dev.databases.providers.mysql.username}
+CLOUD_DOG_DB__PASSWORD=${vault.dev.databases.providers.mysql.password}
+CLOUD_DOG_DB__DATABASE=cloud_dog_db_test

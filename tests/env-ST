@@ -1,0 +1,3 @@
+TEST_ENV_TIER=ST
+CLOUD_DOG_DB__DIALECT=sqlite
+CLOUD_DOG_DB__PATH=./working/st-platform-db.sqlite3
