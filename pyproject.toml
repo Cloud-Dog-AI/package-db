@@ -4,7 +4,7 @@ authors = [
   { name = "Cloud-Dog, Viewdeck Engineering Limited" }
 ]
 name = "cloud_dog_db"
-version = "0.3.1"
+version = "0.3.2"
 description = "PS-DB platform database foundation package for Cloud-Dog services (SQL + NoSQL/search/wide-column/vector/time-series + source connectors)"
 requires-python = ">=3.10"
 dependencies = [

@@ -45,8 +45,9 @@ class ElasticsearchConnector:
     index-template endpoints, and keyword-arg signatures.
 
     Args:
-        uri: Full Elasticsearch URI including scheme, optional credentials,
-            host and port. E.g. ``https://elastic:pass@host:9200``.
+        uri: Full Elasticsearch endpoint URI including scheme, host, and port.
+            Legacy URI user information is passed separately to the client as
+            ``basic_auth`` and is never embedded in a host URL.
         timeout_seconds: Per-request timeout passed to the transport layer.
 
     Related tests:
@@ -64,7 +65,8 @@ class ElasticsearchConnector:
         """Construct an Elasticsearch client from a URI string.
 
         Args:
-            uri: Connection URI (``scheme://[user:pass@]host[:port]``).
+            uri: Connection endpoint URI (``scheme://host[:port]``), optionally
+                carrying legacy user information for separate client auth.
             timeout_seconds: Request timeout.
 
         Returns:
